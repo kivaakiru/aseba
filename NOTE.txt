@@ -1,0 +1,16 @@
+- Untuk login ke admin harap gunakan url http://127.0.0.1:8000/admin/login
+- Login admin : kui@admin.com; admin123
+	user  : sofiyan@user.com; sofiyan123
+		user1@user.com; user123
+- Page yang dapat melakukan CRUD adalah
+  Admin : Tim, Anggota, User
+  User  : Edit profil
+- dashboard admin baru bisa menampilkan anggota dan tim
+
+
+Jenis User :
+1. Reguler
+2. Club/Community
+Level User :
+1. Normal
+2. Event Organizer
