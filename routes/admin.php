@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\Auth\LoginAdminController;
+
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PlayerController;
 use App\Http\Controllers\Admin\TeamController;
@@ -9,8 +11,11 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\ReportController;
+
 use App\Http\Controllers\Admin\Aseba\GalleryController;
 use App\Http\Controllers\Admin\Aseba\ProfileController;
+use App\Http\Controllers\Admin\Aseba\ProfileContactController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -28,8 +33,10 @@ Route::get('/admin/login', function () {
 
 })->name('admin.login');
 
+
 Route::post('/admin/login', [LoginAdminController::class, 'login'])
     ->name('admin.login.store');
+
 
 Route::post('/admin/logout', [LoginAdminController::class, 'logout'])
     ->name('admin.logout');
@@ -46,18 +53,62 @@ Route::middleware(['auth', 'admin'])
     ->name('admin.')
     ->group(function () {
 
-        Route::get('/dashboard', [DashboardController::class, 'index'])
-            ->name('dashboard');
 
-        Route::resource('users', UserController::class)
-            ->except(['show']);
+        /*
+        |--------------------------------------------------------------------------
+        | DASHBOARD
+        |--------------------------------------------------------------------------
+        */
 
-        Route::get('/players/export', [PlayerController::class, 'export'])
-            ->name('players.export');
+        Route::get(
+            '/dashboard',
+            [DashboardController::class, 'index']
+        )->name('dashboard');
 
-        Route::resource('players', PlayerController::class);
 
-        Route::resource('teams', TeamController::class);
+        /*
+        |--------------------------------------------------------------------------
+        | USERS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::resource(
+            'users',
+            UserController::class
+        )->except([
+            'show'
+        ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PLAYERS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/players/export',
+            [PlayerController::class, 'export']
+        )->name('players.export');
+
+        Route::resource(
+            'players',
+            PlayerController::class
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | TEAMS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::resource(
+            'teams',
+            TeamController::class
+        );
+
+
         /*
         |--------------------------------------------------------------------------
         | PROFILE ASEBA
@@ -68,6 +119,13 @@ Route::middleware(['auth', 'admin'])
             '/profile',
             [ProfileController::class, 'index']
         )->name('aseba.profile');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PROFILE - MANAGEMENT BOARD
+        |--------------------------------------------------------------------------
+        */
 
         Route::post(
             '/profile/management',
@@ -90,11 +148,12 @@ Route::middleware(['auth', 'admin'])
         )->name('aseba.profile.management.toggle');
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | PROFILE - CLUB HISTORY
+        |--------------------------------------------------------------------------
+        */
 
-
-
-
-        // PROFILE - CLUB HISTORY
         Route::get(
             '/profile/history',
             [ProfileController::class, 'history']
@@ -126,7 +185,12 @@ Route::middleware(['auth', 'admin'])
         )->name('aseba.profile.history.destroy');
 
 
-        // PROFILE - MANAGEMENT BOARD
+        /*
+        |--------------------------------------------------------------------------
+        | PROFILE - MANAGEMENT PAGE
+        |--------------------------------------------------------------------------
+        */
+
         Route::get(
             '/profile/management',
             [ProfileController::class, 'management']
@@ -138,7 +202,12 @@ Route::middleware(['auth', 'admin'])
         )->name('aseba.profile.management.edit');
 
 
-        // PROFILE - ACHIEVEMENTS
+        /*
+        |--------------------------------------------------------------------------
+        | PROFILE - ACHIEVEMENTS
+        |--------------------------------------------------------------------------
+        */
+
         Route::get(
             '/profile/achievements',
             [ProfileController::class, 'achievements']
@@ -172,6 +241,49 @@ Route::middleware(['auth', 'admin'])
 
         /*
         |--------------------------------------------------------------------------
+        | PROFILE - KONTAK & SOSIAL MEDIA
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('profile/kontak')
+            ->name('aseba.profile.contact.')
+            ->controller(ProfileContactController::class)
+            ->group(function () {
+
+                Route::get(
+                    '/',
+                    'index'
+                )->name('index');
+
+                Route::post(
+                    '/address',
+                    'storeAddress'
+                )->name('address.store');
+
+                Route::post(
+                    '/social',
+                    'storeSocial'
+                )->name('social.store');
+
+                Route::put(
+                    '/{id}',
+                    'update'
+                )->name('update');
+
+                Route::delete(
+                    '/{id}',
+                    'destroy'
+                )->name('destroy');
+
+                Route::post(
+                    '/reorder',
+                    'reorder'
+                )->name('reorder');
+            });
+
+
+        /*
+        |--------------------------------------------------------------------------
         | GALLERY ASEBA
         |--------------------------------------------------------------------------
         */
@@ -181,32 +293,59 @@ Route::middleware(['auth', 'admin'])
             ->controller(GalleryController::class)
             ->group(function () {
 
-                // Album
-                Route::get('/', 'index')
-                    ->name('index');
 
-                Route::get('/create', 'create')
-                    ->name('create');
+                /*
+                |--------------------------------------------------------------------------
+                | Album
+                |--------------------------------------------------------------------------
+                */
 
-                Route::post('/', 'store')
-                    ->name('store');
+                Route::get(
+                    '/',
+                    'index'
+                )->name('index');
 
-                Route::get('/edit/{id}', 'edit')
-                    ->name('edit');
+                Route::get(
+                    '/create',
+                    'create'
+                )->name('create');
 
-                Route::put('/{id}', 'update')
-                    ->name('update');
+                Route::post(
+                    '/',
+                    'store'
+                )->name('store');
 
-                Route::get('/show/{id}', 'show')
-                    ->name('show');
+                Route::get(
+                    '/edit/{id}',
+                    'edit'
+                )->name('edit');
 
-                Route::delete('/{id}', 'destroy')
-                    ->name('destroy');
+                Route::put(
+                    '/{id}',
+                    'update'
+                )->name('update');
+
+                Route::get(
+                    '/show/{id}',
+                    'show'
+                )->name('show');
+
+                Route::delete(
+                    '/{id}',
+                    'destroy'
+                )->name('destroy');
 
 
-                // Foto dalam Album
-                Route::post('/{id}/photos', 'storePhotos')
-                    ->name('photos.store');
+                /*
+                |--------------------------------------------------------------------------
+                | Foto dalam Album
+                |--------------------------------------------------------------------------
+                */
+
+                Route::post(
+                    '/{id}/photos',
+                    'storePhotos'
+                )->name('photos.store');
 
                 Route::delete(
                     '/{albumId}/photos/{photoId}',
@@ -221,135 +360,133 @@ Route::middleware(['auth', 'admin'])
         |--------------------------------------------------------------------------
         */
 
-        Route::prefix('courts')->name('courts.')->group(function () {
-
-            /*
-            |--------------------------------------------------------------------------
-            | Booking
-            |--------------------------------------------------------------------------
-            */
-
-            Route::get(
-                '/bookings',
-                [BookingController::class, 'index']
-            )->name('bookings');
-
-            Route::get(
-                '/bookings/create',
-                [BookingController::class, 'create']
-            )->name('bookings.create');
-
-            Route::post(
-                '/bookings',
-                [BookingController::class, 'store']
-            )->name('bookings.store');
-
-            Route::get(
-                '/bookings/{booking}',
-                [BookingController::class, 'show']
-            )->name('bookings.show');
-
-            Route::get(
-                '/bookings/{booking}/edit',
-                [BookingController::class, 'edit']
-            )->name('bookings.edit');
-
-            Route::put(
-                '/bookings/{booking}',
-                [BookingController::class, 'update']
-            )->name('bookings.update');
-
-            Route::delete(
-                '/bookings/{booking}',
-                [BookingController::class, 'destroy']
-            )->name('bookings.destroy');
+        Route::prefix('courts')
+            ->name('courts.')
+            ->group(function () {
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | Approval
-            |--------------------------------------------------------------------------
-            */
+                /*
+                |--------------------------------------------------------------------------
+                | Booking
+                |--------------------------------------------------------------------------
+                */
 
-            Route::get(
-                '/approval',
-                [BookingController::class, 'approval']
-            )->name('approval');
+                Route::get(
+                    '/bookings',
+                    [BookingController::class, 'index']
+                )->name('bookings');
 
-            Route::patch(
-                '/approval/{booking}/approve',
-                [BookingController::class, 'approve']
-            )->name('approve');
+                Route::get(
+                    '/bookings/create',
+                    [BookingController::class, 'create']
+                )->name('bookings.create');
 
-            Route::patch(
-                '/approval/{booking}/reject',
-                [BookingController::class, 'reject']
-            )->name('reject');
+                Route::post(
+                    '/bookings',
+                    [BookingController::class, 'store']
+                )->name('bookings.store');
 
-            Route::patch(
-                '/approval/{booking}/confirm-payment',
-                [BookingController::class, 'confirmPayment']
-            )->name('confirmPayment');
+                Route::get(
+                    '/bookings/{booking}',
+                    [BookingController::class, 'show']
+                )->name('bookings.show');
+
+                Route::get(
+                    '/bookings/{booking}/edit',
+                    [BookingController::class, 'edit']
+                )->name('bookings.edit');
+
+                Route::put(
+                    '/bookings/{booking}',
+                    [BookingController::class, 'update']
+                )->name('bookings.update');
+
+                Route::delete(
+                    '/bookings/{booking}',
+                    [BookingController::class, 'destroy']
+                )->name('bookings.destroy');
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | History
-            |--------------------------------------------------------------------------
-            */
+                /*
+                |--------------------------------------------------------------------------
+                | Approval
+                |--------------------------------------------------------------------------
+                */
 
-            Route::get(
-                '/history',
-                [BookingController::class, 'history']
-            )->name('history');
+                Route::get(
+                    '/approval',
+                    [BookingController::class, 'approval']
+                )->name('approval');
+
+                Route::patch(
+                    '/approval/{booking}/approve',
+                    [BookingController::class, 'approve']
+                )->name('approve');
+
+                Route::patch(
+                    '/approval/{booking}/reject',
+                    [BookingController::class, 'reject']
+                )->name('reject');
+
+                Route::patch(
+                    '/approval/{booking}/confirm-payment',
+                    [BookingController::class, 'confirmPayment']
+                )->name('confirmPayment');
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | Settings
-            |--------------------------------------------------------------------------
-            */
+                /*
+                |--------------------------------------------------------------------------
+                | History
+                |--------------------------------------------------------------------------
+                */
 
-            Route::get(
-                '/settings',
-                [BookingController::class, 'settings']
-            )->name('settings');
+                Route::get(
+                    '/history',
+                    [BookingController::class, 'history']
+                )->name('history');
 
-            Route::post(
-                '/settings',
-                [BookingController::class, 'storeSetting']
-            )->name('settings.store');
 
-            Route::get(
-                '/settings/{schedule}/edit',
-                [BookingController::class, 'editSetting']
-            )->name('settings.edit');
+                /*
+                |--------------------------------------------------------------------------
+                | Settings
+                |--------------------------------------------------------------------------
+                */
 
-            Route::put(
-                '/settings/{schedule}',
-                [BookingController::class, 'updateSetting']
-            )->name('settings.update');
+                Route::get(
+                    '/settings',
+                    [BookingController::class, 'settings']
+                )->name('settings');
 
-            Route::delete(
-                '/settings/{schedule}',
-                [BookingController::class, 'destroySetting']
-            )->name('settings.destroy');
+                Route::post(
+                    '/settings',
+                    [BookingController::class, 'storeSetting']
+                )->name('settings.store');
 
-            Route::patch(
-                '/settings/{schedule}/toggle',
-                [BookingController::class, 'toggleSetting']
-            )->name('settings.toggle');
+                Route::get(
+                    '/settings/{schedule}/edit',
+                    [BookingController::class, 'editSetting']
+                )->name('settings.edit');
 
-            Route::delete(
-                '/settings/{schedule}',
-                [BookingController::class, 'destroySetting']
-            )->name('settings.destroy');
+                Route::put(
+                    '/settings/{schedule}',
+                    [BookingController::class, 'updateSetting']
+                )->name('settings.update');
 
-            Route::get(
-                '/master-schedules',
-                [BookingController::class, 'masterSchedules']
-            )->name('masterSchedules');
-        });
+                Route::delete(
+                    '/settings/{schedule}',
+                    [BookingController::class, 'destroySetting']
+                )->name('settings.destroy');
+
+                Route::patch(
+                    '/settings/{schedule}/toggle',
+                    [BookingController::class, 'toggleSetting']
+                )->name('settings.toggle');
+
+                Route::get(
+                    '/master-schedules',
+                    [BookingController::class, 'masterSchedules']
+                )->name('masterSchedules');
+            });
 
 
         /*
@@ -380,13 +517,15 @@ Route::middleware(['auth', 'admin'])
         |--------------------------------------------------------------------------
         */
 
-        Route::prefix('logs')->name('logs.')->group(function () {
+        Route::prefix('logs')
+            ->name('logs.')
+            ->group(function () {
 
-            Route::view(
-                '/',
-                'admin.logs.activity_logs'
-            )->name('index');
-        });
+                Route::view(
+                    '/',
+                    'admin.logs.activity_logs'
+                )->name('index');
+            });
 
 
         /*
@@ -404,4 +543,5 @@ Route::middleware(['auth', 'admin'])
             '/settings',
             [SettingsController::class, 'update']
         )->name('settings.update');
+
     });

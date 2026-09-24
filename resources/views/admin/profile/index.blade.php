@@ -391,6 +391,55 @@
 
         </div>
 
+                {{-- =========================
+                    CONTACT & SOCIAL MEDIA
+                ========================= --}}
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="profile-module">
+
+                        <div class="module-icon">
+                            <i class="bi bi-share-fill"></i>
+                        </div>
+
+                        <h4>Kontak & Sosial Media</h4>
+
+                        <div class="profile-module-description">
+                            Kelola alamat, sosial media dan kontak ASEBA
+                            yang akan ditampilkan pada footer halaman utama.
+                        </div>
+
+                        <div class="module-bottom">
+
+                            <div class="module-count">
+
+                                <strong>
+                                    -
+                                </strong>
+
+                                <span>
+                                    Contact & Social Media
+                                </span>
+
+                            </div>
+
+                            <a
+                                href="{{ route('admin.aseba.profile.contact.index') }}"
+                                class="module-btn">
+
+                                Kelola
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
     </div>
 
 </div>
