@@ -238,51 +238,100 @@
     letter-spacing:1px;
 }
 
-.achievement-card{
+.achievement-list{
     background:#fff;
+    border:1px solid #e5e7eb;
     border-radius:28px;
     overflow:hidden;
-
-    border:1px solid #e5e7eb;
-
-    transition:.35s;
-
-    height:100%;
 }
 
-.achievement-card:hover{
-    transform:translateY(-8px);
+.achievement-item{
+    display:flex;
+    align-items:flex-start;
+    gap:25px;
+    padding:28px 30px;
+    border-bottom:1px solid #e5e7eb;
+    transition:.3s;
 }
 
-.achievement-image{
-    height:220px;
-
-    background:
-        linear-gradient(rgba(2,6,23,.65), rgba(2,6,23,.8)),
-        url('https://images.unsplash.com/photo-1519861531473-9200262188bf?q=80&w=1200');
-
-    background-size:cover;
-    background-position:center;
+.achievement-item:last-child{
+    border-bottom:none;
 }
 
-.achievement-content{
-    padding:25px;
+.achievement-item:hover{
+    background:#fffaf5;
 }
 
-.achievement-badge{
-    color:var(--primary);
-    font-size:.75rem;
+.achievement-icon{
+    width:52px;
+    height:52px;
+    min-width:52px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:16px;
+    background:#fff7ed;
+    color:#f97316;
+    font-size:1.35rem;
+}
+
+.achievement-info{
+    flex:1;
+    min-width:0;
+}
+
+.achievement-year{
+    color:#f97316;
+    font-size:.72rem;
     font-weight:800;
-    text-transform:uppercase;
     letter-spacing:2px;
+    text-transform:uppercase;
 }
 
 .achievement-title{
-    margin-top:12px;
-    font-size:1.25rem;
+    margin-top:5px;
+    font-size:1.15rem;
     font-weight:800;
-    line-height:1.5;
+    color:#020617;
+    line-height:1.4;
 }
+
+.achievement-competition{
+    margin-top:5px;
+    color:#64748b;
+    font-size:.78rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+.achievement-description{
+    margin-top:8px;
+    color:#94a3b8;
+    font-size:.82rem;
+    line-height:1.7;
+}
+
+@media(max-width:767px){
+
+    .achievement-item{
+        gap:15px;
+        padding:22px 20px;
+    }
+
+    .achievement-icon{
+        width:44px;
+        height:44px;
+        min-width:44px;
+        font-size:1.1rem;
+    }
+
+    .achievement-title{
+        font-size:1rem;
+    }
+
+}
+
 
 .cta-section{
     background:var(--dark);
@@ -614,25 +663,84 @@
 
         </div>
 
-        <div class="row g-4">
+        <div class="achievement-list">
 
-            <div class="col-12">
+            @forelse($achievements as $achievement)
 
-                <div class="achievement-card">
+                <div class="achievement-item">
 
-                    <div class="achievement-content text-center py-5">
+                    <div class="achievement-icon">
 
-                        <div class="text-secondary">
+                        <i class="bi bi-trophy-fill"></i>
 
-                            <i class="bi bi-trophy fs-1"></i>
+                    </div>
 
-                            <div class="fw-bold mt-3">
-                                Belum ada data prestasi ASEBA.
+
+                    <div class="achievement-info">
+
+                        <div class="achievement-year">
+
+                            {{ $achievement->year }}
+
+                        </div>
+
+
+                        <div class="achievement-title">
+
+                            {{ $achievement->title }}
+
+                        </div>
+
+
+                        @if($achievement->competition)
+
+                            <div class="achievement-competition">
+
+                                {{ $achievement->competition }}
+
                             </div>
 
-                            <small>
-                                Data prestasi akan ditampilkan setelah fitur Gallery tersedia.
-                            </small>
+                        @endif
+
+
+                        @if($achievement->description)
+
+                            <div class="achievement-description">
+
+                                {{ $achievement->description }}
+
+                            </div>
+
+                        @endif
+
+                    </div>
+
+                </div>
+
+            @empty
+
+                <div class="achievement-item">
+
+                    <div class="achievement-icon">
+
+                        <i class="bi bi-trophy"></i>
+
+                    </div>
+
+
+                    <div class="achievement-info">
+
+                        <div class="achievement-title">
+
+                            Belum ada data prestasi ASEBA.
+
+                        </div>
+
+
+                        <div class="achievement-description">
+
+                            Data prestasi akan ditampilkan setelah
+                            ditambahkan melalui Admin Profile.
 
                         </div>
 
@@ -640,7 +748,7 @@
 
                 </div>
 
-            </div>
+            @endforelse
 
         </div>
 

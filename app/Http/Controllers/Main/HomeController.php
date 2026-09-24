@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Main;
 
 use App\Http\Controllers\Controller;
+use App\Models\Achievement;
 use App\Models\Booking;
 use App\Models\MasterSchedule;
 use App\Models\Player;
@@ -21,14 +22,11 @@ class HomeController extends Controller
 
         $today = Carbon::today('Asia/Jakarta');
 
+
         /*
         |--------------------------------------------------------------------------
         | BOOKING HARI INI
         |--------------------------------------------------------------------------
-        |
-        | Hanya booking yang sudah APPROVED yang ditampilkan
-        | di Landing Page.
-        |
         */
 
         $todayBookings = Booking::whereDate(
@@ -62,6 +60,7 @@ class HomeController extends Controller
             })
             ->values();
 
+
         /*
         |--------------------------------------------------------------------------
         | LATIHAN ASEBA MINGGU INI
@@ -86,6 +85,7 @@ class HomeController extends Controller
 
                 $result = collect();
 
+
                 /*
                 |--------------------------------------------------------------------------
                 | WEEKLY
@@ -107,14 +107,17 @@ class HomeController extends Controller
 
                             $result->push([
                                 'date' => $current->copy(),
+
                                 'description' =>
                                     $schedule->description,
+
                                 'start' =>
                                     substr(
                                         (string) $schedule->start_time,
                                         0,
                                         5
                                     ),
+
                                 'end' =>
                                     substr(
                                         (string) $schedule->end_time,
@@ -127,6 +130,7 @@ class HomeController extends Controller
                         $current->addDay();
                     }
                 }
+
 
                 /*
                 |--------------------------------------------------------------------------
@@ -152,14 +156,17 @@ class HomeController extends Controller
 
                         $result->push([
                             'date' => $scheduleDate,
+
                             'description' =>
                                 $schedule->description,
+
                             'start' =>
                                 substr(
                                     (string) $schedule->start_time,
                                     0,
                                     5
                                 ),
+
                             'end' =>
                                 substr(
                                     (string) $schedule->end_time,
@@ -171,34 +178,39 @@ class HomeController extends Controller
                 }
 
                 return $result;
+
             })
             ->sortBy(function ($item) {
+
                 return $item['date']->format('Y-m-d')
                     . ' '
                     . $item['start'];
+
             })
             ->values();
 
-            /*
-            |--------------------------------------------------------------------------
-            | LATIHAN HARI INI
-            |--------------------------------------------------------------------------
-            */
 
-            $todayPractices = $practiceSchedules
-                ->filter(function ($practice) use ($today) {
-                    return $practice['date']->isSameDay($today);
-                })
-                ->values();
+        /*
+        |--------------------------------------------------------------------------
+        | LATIHAN ASEBA HARI INI
+        |--------------------------------------------------------------------------
+        */
+
+        $todayPractices = $practiceSchedules
+            ->filter(function ($practice) use ($today) {
+
+                return $practice['date']->isSameDay(
+                    $today
+                );
+
+            })
+            ->values();
+
 
         /*
         |--------------------------------------------------------------------------
         | ASEBA SUMMARY
         |--------------------------------------------------------------------------
-        |
-        | Anggota = player aktif
-        | Tim = seluruh tim
-        |
         */
 
         $totalAnggota = Player::where(
@@ -207,6 +219,19 @@ class HomeController extends Controller
         )->count();
 
         $totalTim = Team::count();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PRESTASI ASEBA
+        |--------------------------------------------------------------------------
+        */
+
+        $achievements = Achievement::orderByDesc('year')
+            ->orderByDesc('id')
+            ->take(3)
+            ->get();
+
 
         /*
         |--------------------------------------------------------------------------
@@ -218,10 +243,11 @@ class HomeController extends Controller
             'main.home.home',
             compact(
                 'todayBookings',
-                'todayPractices',
                 'practiceSchedules',
+                'todayPractices',
                 'totalAnggota',
-                'totalTim'
+                'totalTim',
+                'achievements'
             )
         );
     }
